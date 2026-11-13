@@ -10,7 +10,9 @@
 body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:820px;margin:2rem auto;padding:0 1rem}
 h1{font-size:22px;font-weight:500;margin:0}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:.5rem}
-.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:560px){.g3{grid-template-columns:1fr}}
 .m{background:var(--card);border-radius:8px;padding:1rem}
 .ml{font-size:13px;color:var(--muted);margin:0}.mv{font-size:22px;font-weight:500;margin:4px 0 0}
 label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
@@ -28,13 +30,15 @@ summary{cursor:pointer;color:var(--muted);font-size:14px}
 <div class="top"><h1>OKX USDC-Zins-Dashboard</h1><button id="reload">Neu laden</button></div>
 <p class="status" id="status">Lade Daten…</p>
 
-<div class="g" style="margin-bottom:1.5rem">
+<div class="g3" style="margin-bottom:12px">
 <div class="m"><p class="ml">Aktueller Zins p. a.</p><p class="mv" id="s1">–</p></div>
 <div class="m"><p class="ml">Ø letzte 7 Tage p. a.</p><p class="mv" id="s2">–</p></div>
-<div class="m"><p class="ml">Ø seit Kreditaufnahme p. a.</p><p class="mv" id="s5">–</p></div>  
-<p></p>
-<div class="m"><p class="ml">Kosten/Jahr (Ø 7 Tage)</p><p class="mv" id="s3">–</p></div>
+<div class="m"><p class="ml">Ø seit Kreditaufnahme p. a.</p><p class="mv" id="s5">–</p></div>
+</div>
+<div class="g3" style="margin-bottom:1.5rem">
+<div class="m"><p class="ml" id="l6">Kosten aktueller Monat</p><p class="mv" id="s6">–</p></div>
 <div class="m"><p class="ml">Gezahlte Zinsen gesamt</p><p class="mv" id="s4">–</p></div>
+<div class="m"><p class="ml">Kosten/Jahr (Ø 7 Tage)</p><p class="mv" id="s3">–</p></div>
 </div>
 
 <div style="position:relative;height:240px;margin-bottom:1.5rem"><canvas id="c"></canvas></div>
@@ -84,13 +88,21 @@ function render(rows){
   const w=rows.slice(-168);
   const avg7=w.reduce((s,r)=>s+r.pa,0)/w.length;
   const total=rows.reduce((s,r)=>s+r.int,0);
-  $('s1').textContent=f(last.pa)+' %';
-  $('s2').textContent=f(avg7)+' %';
-  $('s3').textContent=f(last.liab*avg7/100,0)+' USDC';
-  $('s4').textContent=f(total)+' USDC';
   const liabStunden=rows.reduce((s,r)=>s+r.liab,0);
   const avgAll=liabStunden>0?total/liabStunden*8760*100:rows.reduce((s,r)=>s+r.pa,0)/rows.length;
+
+  const jetzt=new Date();
+  const monatsStart=new Date(jetzt.getFullYear(),jetzt.getMonth(),1).getTime();
+  const monat=rows.filter(r=>r.ts>=monatsStart).reduce((s,r)=>s+r.int,0);
+  const monatsName=jetzt.toLocaleDateString('de-DE',{month:'long'});
+
+  $('s1').textContent=f(last.pa)+' %';
+  $('s2').textContent=f(avg7)+' %';
   $('s5').textContent=f(avgAll)+' %';
+  $('l6').textContent='Kosten im '+monatsName;
+  $('s6').textContent=f(monat)+' USDC';
+  $('s4').textContent=f(total)+' USDC';
+  $('s3').textContent=f(last.liab*avg7/100,0)+' USDC';
 
   const tage={};
   rows.forEach(r=>{
