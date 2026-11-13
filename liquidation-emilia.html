@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OKX Liquidationspreis-Rechner f&uuml;r Emilia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f5f7;--surface:#ffffff;--ink:#14212b;--muted:#5d6b77;--line:#d9e0e6;--ok:#12805c;--warn:#a96a00;--bad:#c0283d;--okbg:#e2f4ec;--warnbg:#fbf0d9;--badbg:#fbe4e8;--focus:#1a5fb4;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161c;--surface:#18222b;--ink:#e8eef3;--muted:#93a3b1;--line:#2b3946;--ok:#47c79a;--warn:#e8b04a;--bad:#ff6b80;--okbg:#14352b;--warnbg:#3a2e12;--badbg:#401a22;--focus:#6aa7ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161c;--surface:#18222b;--ink:#e8eef3;--muted:#93a3b1;--line:#2b3946;--ok:#47c79a;--warn:#e8b04a;--bad:#ff6b80;--okbg:#14352b;--warnbg:#3a2e12;--badbg:#401a22;--focus:#6aa7ff;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:26px;line-height:1.2;margin:0 0 4px;font-weight:600}
+h2{font-size:17px;margin:0 0 12px;font-weight:600}
+.sub{color:var(--muted);margin:0 0 12px;max-width:62ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+input:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+input.auto{border-color:var(--ok)}
+button{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{background:var(--bg)}
+.hint{font-size:12px;color:var(--muted);margin-top:3px}
+.hint.a{color:var(--ok)}
+.statusbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 20px}
+.status{font-size:13px;color:var(--muted);margin:0}.status.err{color:var(--bad)}
+.cmp{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.col h3{margin:0 0 10px;font-size:14px;color:var(--muted);font-weight:500}
+.hero{font-size:38px;line-height:1.1;font-weight:600;letter-spacing:-0.01em}
+.hero small{display:block;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0;margin-bottom:2px}
+.rows{margin-top:12px;border-top:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.row span:first-child{color:var(--muted)}
+.row span:last-child{font-weight:500;text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:500}
+.ok{background:var(--okbg);color:var(--ok)}.warn{background:var(--warnbg);color:var(--warn)}.bad{background:var(--badbg);color:var(--bad)}
+.track{position:relative;height:44px;margin:26px 8px 34px;background:linear-gradient(90deg,var(--badbg) 0,var(--badbg) var(--liq,30%),var(--warnbg) var(--liq,30%),var(--warnbg) var(--wrn,40%),var(--okbg) var(--wrn,40%));border-radius:6px;border:1px solid var(--line)}
+.mk{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.mk b{position:absolute;white-space:nowrap;font-size:12px;font-weight:500;transform:translateX(-50%)}
+.mk.t b{bottom:100%;margin-bottom:2px}.mk.u b{top:100%;margin-top:2px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted);font-size:13px}
+.note{font-size:13px;color:var(--muted)}
+.note li{margin-bottom:4px}
+details summary{cursor:pointer;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>OKX Liquidationspreis f&uuml;r Emilia</h1>
+<p class="sub">Unterkonto Emilia: Spot-Margin mit BTC als Sicherheit und USDC-Kredit. Die Werte unter „Deine Position“ werden automatisch aus dem OKX-Unterkonto geladen (grün umrandet). Du kannst sie jederzeit überschreiben.</p>
+<div class="statusbar"><p class="status" id="status">Lade Kontodaten…</p><button id="reload">Neu laden</button></div>
+
+<section class="panel">
+<h2>Position Emilia</h2>
+<div class="grid">
+<div><label for="btc">BTC-Bestand</label><input id="btc" type="number" step="any" value="0.0245"><div class="hint" id="h-btc"></div></div>
+<div><label for="debt">Geliehene USDC</label><input id="debt" type="number" step="any" value="1252.63"><div class="hint" id="h-debt"></div></div>
+<div><label for="price">BTC-Kurs aktuell (USD)</label><input id="price" type="number" step="any" value="77544"><div class="hint" id="h-price"></div></div>
+<div><label for="disc">Abschlag BTC (Faktor)</label><input id="disc" type="number" step="0.001" value="0.98"><div class="hint">98 % des BTC-Werts zählen als Sicherheit</div></div>
+<div><label for="mm">MM + Gebühr (% der Schuld)</label><input id="mm" type="number" step="0.01" value="2.00"><div class="hint" id="h-mm">Standardwert, wird bei Verfügbarkeit aus der OKX-Quote berechnet</div></div>
+<div><label for="roll">Rollover pro Stunde (%)</label><input id="roll" type="number" step="0.0001" value="0.0007"><div class="hint" id="h-roll"></div></div>
+<div><label for="cashu">USDC-Guthaben jetzt</label><input id="cashu" type="number" step="any" value="0"><div class="hint" id="h-cashu"></div></div>
+<div><label for="casheur">EUR-Guthaben jetzt</label><input id="casheur" type="number" step="any" value="10"><div class="hint" id="h-casheur"></div></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Geplante Änderungen</h2>
+<div class="grid">
+<div><label for="addu">Nachschuss in USDC</label><input id="addu" type="number" step="any" value="0"><div class="hint">bleibt als Guthaben, Schuld bleibt gleich</div></div>
+<div><label for="addeur">Nachschuss in EUR</label><input id="addeur" type="number" step="any" value="0"><div class="hint">bleibt als Guthaben, Schuld bleibt gleich</div></div>
+<div><label for="eurusd">EUR/USD-Kurs</label><input id="eurusd" type="number" step="0.0001" value="1.1229"><div class="hint" id="h-eurusd">Kurs für bestehendes und neues EUR-Guthaben</div></div>
+<div><label for="eurdisc">Abschlag EUR (Faktor)</label><input id="eurdisc" type="number" step="0.001" value="0.981"><div class="hint">aus der Einzahlung abgeleitet</div></div>
+<div><label for="repay">Kreditrückzahlung in USDC</label><input id="repay" type="number" step="any" value="0"><div class="hint">aus eigenen Mitteln, senkt die Schuld</div></div>
+<div><label for="addb">Nachschuss in BTC</label><input id="addb" type="number" step="any" value="0"></div>
+<div><label for="sell">Teilverkauf in BTC</label><input id="sell" type="number" step="any" value="0"><div class="hint">Erlös tilgt Schulden</div></div>
+<div><label for="sellp">Verkaufskurs (USD)</label><input id="sellp" type="number" step="any" placeholder="wie aktuell"></div>
+<div><label for="days">Haltedauer in Tagen</label><input id="days" type="number" step="1" value="0"><div class="hint">Zinsen erhöhen die Schuld</div></div>
+<div><label for="newcr">Neuer Kredit in USDC</label><input id="newcr" type="number" step="any" value="0"><div class="hint">wird komplett in BTC angelegt</div></div>
+<div><label for="buyp">Nachkaufkurs (USD)</label><input id="buyp" type="number" step="any" placeholder="z. B. 65000"><div class="hint">Kurs, bei dem nachgelegt wird</div></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="cmp">
+<div class="col" id="c0"></div>
+<div class="col" id="c1"></div>
+<div class="col" id="c2"></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Lage auf der Kursachse (nach Plan)</h2>
+<div class="track" id="track"></div>
+<p class="note" style="margin:0">Rot: Liquidation ab Quote 100 % oder darunter. Gelb: Warnbereich bis 300 %. Grün: sicherer als 300 %.</p>
+</section>
+
+<section class="panel">
+<h2>Szenarien bei Kursänderung</h2>
+<div class="scroll"><table id="tbl"></table></div>
+</section>
+
+<section class="panel">
+<h2>So wird gerechnet</h2>
+<ul class="note">
+<li>Bereinigtes Eigenkapital = Abschlag × BTC × Kurs + USDC-Guthaben − Schuld (USDC zählt 1:1). Eine Rückzahlung senkt zusätzlich die Maintenance Margin, ein Nachschuss nicht.</li>
+<li>Quote = Bereinigtes Eigenkapital ÷ (Maintenance Margin + Gebühr). Liquidation bei höchstens 100 %.</li>
+<li>Der Satz für Maintenance Margin und Gebühr wird, wenn OKX die Quote liefert, automatisch aus der echten Quote zurückgerechnet. OKX staffelt ihn nach Positionsgröße.</li>
+<li>Nachkauf: Der neue Kredit kauft BTC zum eingetragenen Kurs, Gebühren und Slippage sind nicht eingerechnet. Die dritte Spalte gilt nur für Kurse bis zum Nachkaufkurs.</li>
+<li>EUR-Guthaben zählt mit EUR/USD-Kurs und Abschlag. Der Abschlag für EUR im Spot-Margin ist nicht öffentlich bestätigt. Fällt der Euro gegen den Dollar, sinkt der Puffer, die Schuld ist in USDC.</li>
+<li>Kontodaten stammen aus dem letzten automatischen Abruf (siehe Zeitstempel oben). Es ist eine Näherung und ersetzt keine Warnungen von OKX.</li>
+</ul>
+</section>
+
+<section class="panel">
+<details id="cfg">
+<summary>Einstellungen (GitHub-Zugang)</summary>
+<div class="grid" style="margin-top:12px">
+<div><label for="owner">GitHub-Benutzername</label><input id="owner" type="text" placeholder="Kirsten281178"></div>
+<div><label for="repo">Repository</label><input id="repo" type="text" placeholder="Crypto"></div>
+<div style="grid-column:1/-1"><label for="token">Token (nur Lesezugriff)</label><input id="token" type="password" placeholder="github_pat_…"></div>
+</div>
+<div style="margin-top:12px"><button id="saveCfg">Speichern und laden</button> <button id="delCfg">Token löschen</button></div>
+</details>
+</section>
+</main>
+<script>
+var KONTO_DATEI='konto_emilia.json';
+var $=function(i){return document.getElementById(i)};
+var nv=function(i){var v=parseFloat($(i).value);return isFinite(v)?v:0};
+var fmt=function(x,d){return x.toLocaleString('de-DE',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})};
+var usd=function(x,d){return fmt(x,d)+' $'};
+function cls(m){return m>5?'ok':(m>3?'warn':'bad')}
+function lbl(m){return m>5?'Geringes Risiko':(m>3?'Mittleres Risiko':(m>1?'Hohes Risiko':'Liquidation'))}
+function mmrAt(s,P){
+  if(s.debt<=0)return Infinity;
+  return (s.d*s.btc*P+s.cash-s.debt)/(s.r*s.debt);
+}
+function priceAt(s,X){
+  if(s.debt<=0||s.btc<=0)return 0;
+  return Math.max(0,(s.debt*(1+X*s.r)-s.cash)/(s.d*s.btc));
+}
+function card(s,title,P){
+  var liq=priceAt(s,1),wrn=priceAt(s,3),m=mmrAt(s,P);
+  var dist=liq>0?(1-liq/P)*100:null;
+  var adj=s.d*s.btc*P+s.cash-s.debt;
+  var lev=adj>0?s.debt/adj:0;
+  var h='<h3>'+title+'</h3>';
+  if(s.debt<=0){h+='<div class="hero"><small>Liquidationspreis</small>keiner</div><p class="note">Keine Schulden, keine Liquidation.</p>';return h}
+  h+='<div class="hero"><small>Liquidationspreis</small>'+usd(liq)+'</div>';
+  h+='<div class="rows">';
+  h+='<div class="row"><span>Abstand zum Kurs</span><span>'+(dist!==null?fmt(dist,1)+' % darunter':'-')+'</span></div>';
+  h+='<div class="row"><span>Warnung bei 300 %</span><span>'+usd(wrn)+'</span></div>';
+  h+='<div class="row"><span>Quote aktuell</span><span>'+fmt(m*100,0)+' % <span class="badge '+cls(m)+'">'+lbl(m)+'</span></span></div>';
+  h+='<div class="row"><span>Schuld</span><span>'+usd(s.debt,0)+'</span></div>';
+  h+='<div class="row"><span>BTC-Bestand</span><span>'+fmt(s.btc,4)+'</span></div>';
+  h+='<div class="row"><span>Hebel</span><span>'+(lev>0?fmt(lev,2)+'x':'-')+'</span></div>';
+  h+='</div>';
+  return h;
+}
+function run(){
+  var P=nv('price'),base={btc:nv('btc'),debt:nv('debt'),cash:nv('cashu')+nv('casheur')*nv('eurusd')*nv('eurdisc'),d:nv('disc'),r:nv('mm')/100};
+  var h=nv('roll')/100,days=nv('days');
+  var interest=base.debt*(Math.pow(1+h,24*days)-1);
+  var sellP=nv('sellp')||P,sell=Math.min(nv('sell'),base.btc+nv('addb'));
+  var repay=Math.min(nv('repay'),base.debt+interest);
+  var plan={d:base.d,r:base.r,cash:base.cash+nv('addu')+nv('addeur')*nv('eurusd')*nv('eurdisc'),
+    btc:Math.max(0,base.btc+nv('addb')-sell),
+    debt:Math.max(0,base.debt+interest-repay-sell*sellP)};
+  $('c0').innerHTML=card(base,'Jetzt',P);
+  $('c1').innerHTML=card(plan,'Nach Plan'+(days>0?' (nach '+days+' Tagen)':''),P);
+  var cr=nv('newcr'),bp=nv('buyp')||P;
+  var s3={d:plan.d,r:plan.r,cash:plan.cash,btc:plan.btc+cr/bp,debt:plan.debt+cr};
+  $('c2').innerHTML=cr>0?card(s3,'Nach Nachkauf bei '+usd(bp),bp)+'<p class="note" style="margin-top:10px">Liquidationspreis gegenüber Plan: '+(priceAt(s3,1)>=priceAt(plan,1)?'+':'')+usd(priceAt(s3,1)-priceAt(plan,1))+'</p>':'';
+  var liq=priceAt(plan,1),wrn=priceAt(plan,3),max=P*1.25,t=$('track');
+  var pc=function(x){return Math.max(0,Math.min(100,x/max*100))};
+  t.style.setProperty('--liq',pc(liq)+'%');t.style.setProperty('--wrn',pc(wrn)+'%');
+  var mk='<div class="mk t" style="left:'+pc(P)+'%"><b>Kurs '+usd(P)+'</b></div>';
+  if(plan.debt>0){
+    mk+='<div class="mk u" style="left:'+pc(liq)+'%"><b>Liquidation '+usd(liq)+'</b></div>';
+    mk+='<div class="mk t" style="left:'+pc(wrn)+'%"><b>Warnung '+usd(wrn)+'</b></div>';
+  }
+  t.innerHTML=mk;
+  var rows='<tr><th>Kursänderung</th><th>BTC-Kurs</th><th>Quote jetzt</th><th>Quote nach Plan</th>'+(cr>0?'<th>Quote nach Nachkauf</th>':'')+'</tr>';
+  [-50,-40,-30,-20,-10,0,10,20].forEach(function(c){
+    var p=P*(1+c/100),a=mmrAt(base,p),b=mmrAt(plan,p);
+    var cell=function(m){return m===Infinity?'<span class="badge ok">keine Schuld</span>':fmt(m*100,0)+' % <span class="badge '+cls(m)+'">'+lbl(m)+'</span>'};
+    rows+='<tr><td>'+(c>0?'+':'')+c+' %</td><td>'+usd(p)+'</td><td>'+cell(a)+'</td><td>'+cell(b)+'</td>'+(cr>0?'<td>'+(p<=bp?cell(mmrAt(s3,p)):'-')+'</td>':'')+'</tr>';
+  });
+  $('tbl').innerHTML=rows;
+}
+document.querySelectorAll('input').forEach(function(e){e.addEventListener('input',run)});
+
+var KEY='okxZinsDashboardCfg';
+var cfg={owner:'Kirsten281178',repo:'Crypto',token:''};
+try{var s=JSON.parse(localStorage.getItem(KEY));if(s){for(var k in s)cfg[k]=s[k];}}catch(e){}
+$('owner').value=cfg.owner;$('repo').value=cfg.repo;$('token').value=cfg.token;
+
+function status(t,err){$('status').textContent=t;$('status').className='status'+(err?' err':'');}
+function setAuto(id,val,dec,hint){
+  if(typeof val!=='number'||!isFinite(val))return;
+  $(id).value=dec!=null?val.toFixed(dec):val;
+  $(id).classList.add('auto');
+  var h=$('h-'+id);if(h){h.textContent=hint;h.className='hint a';}
+}
+
+async function liveKurs(){
+  var urls=['https://www.okx.com/api/v5/market/ticker?instId=BTC-USDC','https://eea.okx.com/api/v5/market/ticker?instId=BTC-USDC'];
+  for(var i=0;i<urls.length;i++){
+    try{
+      var ctl=new AbortController();var to=setTimeout(function(){ctl.abort()},5000);
+      var r=await fetch(urls[i],{cache:'no-store',signal:ctl.signal});clearTimeout(to);
+      if(!r.ok)continue;
+      var j=await r.json();var p=parseFloat(j&&j.data&&j.data[0]&&j.data[0].last);
+      if(p>0)return p;
+    }catch(e){}
+  }
+  return null;
+}
+
+async function laden(){
+  if(!cfg.token||!cfg.owner||!cfg.repo){
+    $('cfg').open=true;status('Trag unten in den Einstellungen deinen GitHub-Token ein. Bis dahin gelten die Standardwerte.',true);run();return;}
+  status('Lade Kontodaten…');
+  var k=null;
+  try{
+    var url='https://api.github.com/repos/'+encodeURIComponent(cfg.owner)+'/'+encodeURIComponent(cfg.repo)+'/contents/'+KONTO_DATEI;
+    var r=await fetch(url,{cache:'no-store',headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28'}});
+    if(r.status===401){status('Token ungültig oder abgelaufen.',true);$('cfg').open=true;run();return;}
+    if(r.status===404){status(KONTO_DATEI+' nicht gefunden. Ist der Workflow schon mit dem Unterkonto gelaufen?',true);run();return;}
+    if(!r.ok){status('Fehler beim Laden (Status '+r.status+').',true);run();return;}
+    k=JSON.parse(await r.text());
+  }catch(e){status('Keine Verbindung zu GitHub. Es gelten die Standardwerte.',true);run();return;}
+
+  var stand=new Date(k.ts).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
+  var tag='automatisch, Stand '+stand;
+  setAuto('btc',k.btc_bestand,4,tag);
+  setAuto('debt',k.usdc_schuld,2,tag);
+  setAuto('cashu',k.usdc_guthaben,2,tag);
+  setAuto('casheur',k.eur_guthaben,2,tag);
+  setAuto('roll',k.rollover_pct_stunde,6,'letzter Stundenzins, Stand '+stand);
+  setAuto('eurusd',k.eurusd,4,'aus OKX-Kursen, Stand '+stand);
+  if(k.mm_prozent)setAuto('mm',k.mm_prozent,2,'aus OKX-Quote von '+fmt(k.quote_prozent,2)+' % berechnet');
+  if(k.btc_kurs)setAuto('price',k.btc_kurs,0,'aus letztem Abruf, Stand '+stand);
+
+  var live=await liveKurs();
+  if(live){
+    var jetzt=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    setAuto('price',live,0,'live von OKX, '+jetzt+' Uhr');
+  }
+  var alter=(Date.now()-k.ts)/3600000;
+  status('Kontodaten Emilia vom '+stand+' Uhr'+(alter>3?' (älter als 3 Stunden, Workflow prüfen)':'')+(live?' · BTC-Kurs live':' · BTC-Kurs aus letztem Abruf'),alter>3);
+  run();
+}
+
+$('saveCfg').onclick=function(){
+  cfg={owner:$('owner').value.trim(),repo:$('repo').value.trim(),token:$('token').value.trim()};
+  try{localStorage.setItem(KEY,JSON.stringify(cfg));}catch(e){}
+  $('cfg').open=false;laden();
+};
+$('delCfg').onclick=function(){
+  cfg.token='';$('token').value='';
+  try{localStorage.setItem(KEY,JSON.stringify(cfg));}catch(e){}
+  status('Token gelöscht.',true);
+};
+$('reload').onclick=laden;
+run();
+laden();
+</script>
+</body>
+</html>
