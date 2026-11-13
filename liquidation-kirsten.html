@@ -241,10 +241,10 @@ function perf(P){
   var wert=w==='EUR'?wertUsd/fx:wertUsd;
   var diff=wert-basis,pct=basis>0?diff/basis*100:0;
   var c=diff>=0?'gain':'loss',vz=diff>=0?'+':'';
-  var einInfo=NACH?(NACH.anzahl+' Überträge'+(aus>0?', abzgl. '+fmt(aus,0)+sym+' Auszahlungen':'')):'noch nicht geladen';
+  var einInfo=NACH?('netto, '+NACH.anzahl+' Überträge hinein'+(aus>0?', '+fmt(aus,0)+sym+' hinaus':'')):'noch nicht geladen';
   $('perf').innerHTML=
     '<div class="pc"><p class="l">Startkapital</p><p class="v">'+fmt(sv,0)+sym+'</p></div>'+
-    '<div class="pc"><p class="l">Einzahlungen seit Kreditbeginn</p><p class="v">'+fmt(ein,0)+sym+'</p><p class="l" style="font-size:12px">'+einInfo+'</p></div>'+
+    '<div class="pc"><p class="l">Einzahlungen seit Kreditbeginn</p><p class="v">'+fmt(ein-aus,0)+sym+'</p><p class="l" style="font-size:12px">'+einInfo+'</p></div>'+
     '<div class="pc"><p class="l">Eingesetzt gesamt</p><p class="v">'+fmt(basis,0)+sym+'</p></div>'+
     '<div class="pc"><p class="l">Wert heute</p><p class="v">'+fmt(wert,0)+sym+'</p></div>'+
     '<div class="pc"><p class="l">Veränderung</p><p class="v '+c+'">'+vz+fmt(diff,0)+sym+'</p></div>'+
