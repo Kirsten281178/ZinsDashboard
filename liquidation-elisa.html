@@ -259,7 +259,7 @@ async function laden(){
     setAuto('price',live,0,'live von OKX, '+jetzt+' Uhr');
   }
   var alter=(Date.now()-k.ts)/3600000;
-  status('Kontodaten elisa vom '+stand+' Uhr'+(alter>3?' (älter als 3 Stunden, Workflow prüfen)':'')+(live?' · BTC-Kurs live':' · BTC-Kurs aus letztem Abruf'),alter>3);
+  status('Kontodaten Elisa vom '+stand+' Uhr'+(alter>3?' (älter als 3 Stunden, Workflow prüfen)':'')+(live?' · BTC-Kurs live':' · BTC-Kurs aus letztem Abruf'),alter>3);
   run();
 }
 
