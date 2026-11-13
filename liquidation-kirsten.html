@@ -51,26 +51,40 @@ th:first-child,td:first-child{text-align:left}
 th{font-weight:500;color:var(--muted);font-size:13px}
 .note{font-size:13px;color:var(--muted)}
 .note li{margin-bottom:4px}
+select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.pc{background:var(--bg);border-radius:8px;padding:12px}
+.pc .l{font-size:13px;color:var(--muted);margin:0}
+.pc .v{font-size:22px;font-weight:600;margin:2px 0 0}
+.gain{color:var(--ok)}.loss{color:var(--bad)}  
 details summary{cursor:pointer;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
 <main>
 <h1>OKX Liquidationspreis f&uuml;r Kirsten</h1>
-<p class="sub">Spot-Margin mit BTC als Sicherheit und USDC-Kredit. Die Werte unter „Deine Position“ werden automatisch aus deinem OKX-Konto geladen (grün umrandet). Du kannst sie jederzeit überschreiben.</p>
+<p class="sub">Unterkonto Kirsten: Spot-Margin mit BTC als Sicherheit und USDC-Kredit. Die Werte unter „Deine Position“ werden automatisch aus dem OKX-Unterkonto geladen (grün umrandet). Du kannst sie jederzeit überschreiben.</p>
 <div class="statusbar"><p class="status" id="status">Lade Kontodaten…</p><button id="reload">Neu laden</button></div>
-
 <section class="panel">
-<h2>Deine Position</h2>
+<h2>Entwicklung seit Start</h2>
 <div class="grid">
-<div><label for="btc">BTC-Bestand</label><input id="btc" type="number" step="any" value="1.6610"><div class="hint" id="h-btc"></div></div>
-<div><label for="debt">Geliehene USDC</label><input id="debt" type="number" step="any" value="60840.59"><div class="hint" id="h-debt"></div></div>
+<div><label for="startk">Startkapital</label><input id="startk" type="number" step="any" placeholder="wird automatisch geladen"><div class="hint" id="h-startk">Kontowert vor dem ersten Kredit</div></div>
+<div><label for="startw">Währung</label><select id="startw"><option value="EUR">Euro</option><option value="USD">Dollar</option></select></div>
+</div>
+<div class="grid" id="perf" style="margin-top:12px"></div>
+</section>
+  
+<section class="panel">
+<h2>Position Kirsten</h2>
+<div class="grid">
+<div><label for="btc">BTC-Bestand</label><input id="btc" type="number" step="any" value="0.0245"><div class="hint" id="h-btc"></div></div>
+<div><label for="btcwert">BTC-Bestand in USDC</label><input id="btcwert" type="text" readonly tabindex="-1" style="background:var(--surface)"><div class="hint">BTC-Bestand × aktueller Kurs</div></div>
+<div><label for="debt">Geliehene USDC</label><input id="debt" type="number" step="any" value="1252.63"><div class="hint" id="h-debt"></div></div>
 <div><label for="price">BTC-Kurs aktuell (USD)</label><input id="price" type="number" step="any" value="77544"><div class="hint" id="h-price"></div></div>
 <div><label for="disc">Abschlag BTC (Faktor)</label><input id="disc" type="number" step="0.001" value="0.98"><div class="hint">98 % des BTC-Werts zählen als Sicherheit</div></div>
-<div><label for="mm">MM + Gebühr (% der Schuld)</label><input id="mm" type="number" step="0.01" value="2.00"><div class="hint" id="h-mm">aus deiner Quote von 2.487,56 % abgeleitet</div></div>
+<div><label for="mm">MM + Gebühr (% der Schuld)</label><input id="mm" type="number" step="0.01" value="2.00"><div class="hint" id="h-mm">Standardwert, wird bei Verfügbarkeit aus der OKX-Quote berechnet</div></div>
 <div><label for="roll">Rollover pro Stunde (%)</label><input id="roll" type="number" step="0.0001" value="0.0007"><div class="hint" id="h-roll"></div></div>
 <div><label for="cashu">USDC-Guthaben jetzt</label><input id="cashu" type="number" step="any" value="0"><div class="hint" id="h-cashu"></div></div>
-<div><label for="casheur">EUR-Guthaben jetzt</label><input id="casheur" type="number" step="any" value="10580"><div class="hint" id="h-casheur"></div></div>
+<div><label for="casheur">EUR-Guthaben jetzt</label><input id="casheur" type="number" step="any" value="10"><div class="hint" id="h-casheur"></div></div>
 </div>
 </section>
 
@@ -80,14 +94,14 @@ details summary{cursor:pointer;color:var(--muted);font-size:14px}
 <div><label for="addu">Nachschuss in USDC</label><input id="addu" type="number" step="any" value="0"><div class="hint">bleibt als Guthaben, Schuld bleibt gleich</div></div>
 <div><label for="addeur">Nachschuss in EUR</label><input id="addeur" type="number" step="any" value="0"><div class="hint">bleibt als Guthaben, Schuld bleibt gleich</div></div>
 <div><label for="eurusd">EUR/USD-Kurs</label><input id="eurusd" type="number" step="0.0001" value="1.1229"><div class="hint" id="h-eurusd">Kurs für bestehendes und neues EUR-Guthaben</div></div>
-<div><label for="eurdisc">Abschlag EUR (Faktor)</label><input id="eurdisc" type="number" step="0.001" value="0.981"><div class="hint">aus deiner Einzahlung abgeleitet</div></div>
+<div><label for="eurdisc">Abschlag EUR (Faktor)</label><input id="eurdisc" type="number" step="0.001" value="0.981"><div class="hint">aus der Einzahlung abgeleitet</div></div>
 <div><label for="repay">Kreditrückzahlung in USDC</label><input id="repay" type="number" step="any" value="0"><div class="hint">aus eigenen Mitteln, senkt die Schuld</div></div>
 <div><label for="addb">Nachschuss in BTC</label><input id="addb" type="number" step="any" value="0"></div>
 <div><label for="sell">Teilverkauf in BTC</label><input id="sell" type="number" step="any" value="0"><div class="hint">Erlös tilgt Schulden</div></div>
 <div><label for="sellp">Verkaufskurs (USD)</label><input id="sellp" type="number" step="any" placeholder="wie aktuell"></div>
 <div><label for="days">Haltedauer in Tagen</label><input id="days" type="number" step="1" value="0"><div class="hint">Zinsen erhöhen die Schuld</div></div>
 <div><label for="newcr">Neuer Kredit in USDC</label><input id="newcr" type="number" step="any" value="0"><div class="hint">wird komplett in BTC angelegt</div></div>
-<div><label for="buyp">Nachkaufkurs (USD)</label><input id="buyp" type="number" step="any" placeholder="z. B. 65000"><div class="hint">Kurs, bei dem du nachlegst</div></div>
+<div><label for="buyp">Nachkaufkurs (USD)</label><input id="buyp" type="number" step="any" placeholder="z. B. 65000"><div class="hint">Kurs, bei dem nachgelegt wird</div></div>
 </div>
 </section>
 
@@ -115,9 +129,9 @@ details summary{cursor:pointer;color:var(--muted);font-size:14px}
 <ul class="note">
 <li>Bereinigtes Eigenkapital = Abschlag × BTC × Kurs + USDC-Guthaben − Schuld (USDC zählt 1:1). Eine Rückzahlung senkt zusätzlich die Maintenance Margin, ein Nachschuss nicht.</li>
 <li>Quote = Bereinigtes Eigenkapital ÷ (Maintenance Margin + Gebühr). Liquidation bei höchstens 100 %.</li>
-<li>Der Satz für Maintenance Margin und Gebühr wird, wenn OKX die Quote liefert, automatisch aus deiner echten Quote zurückgerechnet. OKX staffelt ihn nach Positionsgröße.</li>
+<li>Der Satz für Maintenance Margin und Gebühr wird, wenn OKX die Quote liefert, automatisch aus der echten Quote zurückgerechnet. OKX staffelt ihn nach Positionsgröße.</li>
 <li>Nachkauf: Der neue Kredit kauft BTC zum eingetragenen Kurs, Gebühren und Slippage sind nicht eingerechnet. Die dritte Spalte gilt nur für Kurse bis zum Nachkaufkurs.</li>
-<li>EUR-Guthaben zählt mit EUR/USD-Kurs und Abschlag. Der Abschlag für EUR im Spot-Margin ist nicht öffentlich bestätigt. Fällt der Euro gegen den Dollar, sinkt dein Puffer, die Schuld ist in USDC.</li>
+<li>EUR-Guthaben zählt mit EUR/USD-Kurs und Abschlag. Der Abschlag für EUR im Spot-Margin ist nicht öffentlich bestätigt. Fällt der Euro gegen den Dollar, sinkt der Puffer, die Schuld ist in USDC.</li>
 <li>Kontodaten stammen aus dem letzten automatischen Abruf (siehe Zeitstempel oben). Es ist eine Näherung und ersetzt keine Warnungen von OKX.</li>
 </ul>
 </section>
@@ -135,6 +149,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:14px}
 </section>
 </main>
 <script>
+var KONTO_DATEI='konto.json';
 var $=function(i){return document.getElementById(i)};
 var nv=function(i){var v=parseFloat($(i).value);return isFinite(v)?v:0};
 var fmt=function(x,d){return x.toLocaleString('de-DE',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})};
@@ -169,6 +184,7 @@ function card(s,title,P){
 }
 function run(){
   var P=nv('price'),base={btc:nv('btc'),debt:nv('debt'),cash:nv('cashu')+nv('casheur')*nv('eurusd')*nv('eurdisc'),d:nv('disc'),r:nv('mm')/100};
+  $('btcwert').value=fmt(nv('btc')*P,2)+' USDC';
   var h=nv('roll')/100,days=nv('days');
   var interest=base.debt*(Math.pow(1+h,24*days)-1);
   var sellP=nv('sellp')||P,sell=Math.min(nv('sell'),base.btc+nv('addb'));
@@ -197,10 +213,45 @@ function run(){
     rows+='<tr><td>'+(c>0?'+':'')+c+' %</td><td>'+usd(p)+'</td><td>'+cell(a)+'</td><td>'+cell(b)+'</td>'+(cr>0?'<td>'+(p<=bp?cell(mmrAt(s3,p)):'-')+'</td>':'')+'</tr>';
   });
   $('tbl').innerHTML=rows;
+  perf(P);
+}
+
+var START=null;
+var PKEY='startkapital:'+location.pathname;
+try{var sk=JSON.parse(localStorage.getItem(PKEY));if(sk&&sk.w)$('startw').value=sk.w;}catch(e){}
+function savePerf(){try{localStorage.setItem(PKEY,JSON.stringify({w:$('startw').value}));}catch(e){}}
+function applyStart(){
+  if(!START)return;
+  var w=$('startw').value,v=w==='EUR'?START.eur:START.usd;
+  $('startk').value=v.toFixed(0);$('startk').classList.add('auto');
+  var d=new Date(START.ts).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
+  $('h-startk').textContent='automatisch: Kontowert am '+d+' Uhr, vor dem ersten Kredit';
+  $('h-startk').className='hint a';
+}
+$('startw').addEventListener('change',function(){savePerf();applyStart();run();});
+var NACH=null;
+function perf(P){
+  var sv=nv('startk'),w=$('startw').value,fx=nv('eurusd')||1,sym=w==='EUR'?' €':' $';
+  $('perf').style.gridTemplateColumns='repeat(auto-fit,minmax(220px,1fr))';
+  if(sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Startkapital wird beim nächsten Abruf automatisch ermittelt.</p>';return;}
+  var ein=NACH?(w==='EUR'?NACH.ein_eur:NACH.ein_usd):0;
+  var aus=NACH?(w==='EUR'?NACH.aus_eur:NACH.aus_usd):0;
+  var basis=sv+ein-aus;
+  var wertUsd=nv('btc')*P+nv('cashu')+nv('casheur')*fx-nv('debt');
+  var wert=w==='EUR'?wertUsd/fx:wertUsd;
+  var diff=wert-basis,pct=basis>0?diff/basis*100:0;
+  var c=diff>=0?'gain':'loss',vz=diff>=0?'+':'';
+  var einInfo=NACH?(NACH.anzahl+' Überträge'+(aus>0?', abzgl. '+fmt(aus,0)+sym+' Auszahlungen':'')):'noch nicht geladen';
+  $('perf').innerHTML=
+    '<div class="pc"><p class="l">Startkapital</p><p class="v">'+fmt(sv,0)+sym+'</p></div>'+
+    '<div class="pc"><p class="l">Einzahlungen seit Kreditbeginn</p><p class="v">'+fmt(ein,0)+sym+'</p><p class="l" style="font-size:12px">'+einInfo+'</p></div>'+
+    '<div class="pc"><p class="l">Eingesetzt gesamt</p><p class="v">'+fmt(basis,0)+sym+'</p></div>'+
+    '<div class="pc"><p class="l">Wert heute</p><p class="v">'+fmt(wert,0)+sym+'</p></div>'+
+    '<div class="pc"><p class="l">Veränderung</p><p class="v '+c+'">'+vz+fmt(diff,0)+sym+'</p></div>'+
+    '<div class="pc"><p class="l">Veränderung in %</p><p class="v '+c+'">'+vz+fmt(pct,1)+' %</p></div>';
 }
 document.querySelectorAll('input').forEach(function(e){e.addEventListener('input',run)});
 
-/* ---------- Automatisches Laden ---------- */
 var KEY='okxZinsDashboardCfg';
 var cfg={owner:'Kirsten281178',repo:'Crypto',token:''};
 try{var s=JSON.parse(localStorage.getItem(KEY));if(s){for(var k in s)cfg[k]=s[k];}}catch(e){}
@@ -234,10 +285,10 @@ async function laden(){
   status('Lade Kontodaten…');
   var k=null;
   try{
-    var url='https://api.github.com/repos/'+encodeURIComponent(cfg.owner)+'/'+encodeURIComponent(cfg.repo)+'/contents/konto.json';
+    var url='https://api.github.com/repos/'+encodeURIComponent(cfg.owner)+'/'+encodeURIComponent(cfg.repo)+'/contents/'+KONTO_DATEI;
     var r=await fetch(url,{cache:'no-store',headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28'}});
     if(r.status===401){status('Token ungültig oder abgelaufen.',true);$('cfg').open=true;run();return;}
-    if(r.status===404){status('konto.json nicht gefunden. Ist der Workflow schon mit dem neuen Skript gelaufen?',true);run();return;}
+    if(r.status===404){status(KONTO_DATEI+' nicht gefunden. Ist der Workflow schon mit dem Unterkonto gelaufen?',true);run();return;}
     if(!r.ok){status('Fehler beim Laden (Status '+r.status+').',true);run();return;}
     k=JSON.parse(await r.text());
   }catch(e){status('Keine Verbindung zu GitHub. Es gelten die Standardwerte.',true);run();return;}
@@ -252,14 +303,16 @@ async function laden(){
   setAuto('eurusd',k.eurusd,4,'aus OKX-Kursen, Stand '+stand);
   if(k.mm_prozent)setAuto('mm',k.mm_prozent,2,'aus OKX-Quote von '+fmt(k.quote_prozent,2)+' % berechnet');
   if(k.btc_kurs)setAuto('price',k.btc_kurs,0,'aus letztem Abruf, Stand '+stand);
-
+  if(k.start&&k.start.usd>0){START=k.start;applyStart();}
+  if(k.nachschuesse){NACH=k.nachschuesse;}
+  
   var live=await liveKurs();
   if(live){
     var jetzt=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
     setAuto('price',live,0,'live von OKX, '+jetzt+' Uhr');
   }
   var alter=(Date.now()-k.ts)/3600000;
-  status('Kontodaten vom '+stand+' Uhr'+(alter>3?' (älter als 3 Stunden, Workflow prüfen)':'')+(live?' · BTC-Kurs live':' · BTC-Kurs aus letztem Abruf'),alter>3);
+  status('Kontodaten Kirsten vom '+stand+' Uhr'+(alter>3?' (älter als 3 Stunden, Workflow prüfen)':'')+(live?' · BTC-Kurs live':' · BTC-Kurs aus letztem Abruf'),alter>3);
   run();
 }
 
