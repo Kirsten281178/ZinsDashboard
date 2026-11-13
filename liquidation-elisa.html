@@ -67,7 +67,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:14px}
 <section class="panel">
 <h2>Entwicklung seit Start</h2>
 <div class="grid">
-<div><label for="startk">Startkapital</label><input id="startk" type="number" step="any" placeholder="z. B. 50000"><div class="hint">eigenes eingezahltes Geld, inkl. späterer Nachschüsse</div></div>
+<div><label for="startk">Startkapital</label><input id="startk" type="number" step="any" placeholder="wird automatisch geladen"><div class="hint" id="h-startk">Kontowert vor dem ersten Kredit</div></div>
 <div><label for="startw">Währung</label><select id="startw"><option value="EUR">Euro</option><option value="USD">Dollar</option></select></div>
 </div>
 <div class="grid" id="perf" style="margin-top:12px"></div>
@@ -214,14 +214,22 @@ function run(){
   perf(P);
 }
 
+var START=null;
 var PKEY='startkapital:'+location.pathname;
-try{var sk=JSON.parse(localStorage.getItem(PKEY));if(sk){$('startk').value=sk.v;$('startw').value=sk.w;}}catch(e){}
-function savePerf(){try{localStorage.setItem(PKEY,JSON.stringify({v:$('startk').value,w:$('startw').value}));}catch(e){}}
-$('startk').addEventListener('input',savePerf);
-$('startw').addEventListener('change',function(){savePerf();run();});
+try{var sk=JSON.parse(localStorage.getItem(PKEY));if(sk&&sk.w)$('startw').value=sk.w;}catch(e){}
+function savePerf(){try{localStorage.setItem(PKEY,JSON.stringify({w:$('startw').value}));}catch(e){}}
+function applyStart(){
+  if(!START)return;
+  var w=$('startw').value,v=w==='EUR'?START.eur:START.usd;
+  $('startk').value=v.toFixed(0);$('startk').classList.add('auto');
+  var d=new Date(START.ts).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
+  $('h-startk').textContent='automatisch: Kontowert am '+d+' Uhr, vor dem ersten Kredit';
+  $('h-startk').className='hint a';
+}
+$('startw').addEventListener('change',function(){savePerf();applyStart();run();});
 function perf(P){
   var sv=nv('startk'),w=$('startw').value,fx=nv('eurusd')||1;
-  if(sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Trag dein Startkapital ein, dann siehst du hier Gewinn oder Verlust.</p>';return;}
+  if(sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Startkapital wird beim nächsten Abruf automatisch ermittelt.</p>';return;}
   var wertUsd=nv('btc')*P+nv('cashu')+nv('casheur')*fx-nv('debt');
   var wert=w==='EUR'?wertUsd/fx:wertUsd;
   var diff=wert-sv,pct=diff/sv*100,sym=w==='EUR'?' €':' $';
@@ -285,7 +293,8 @@ async function laden(){
   setAuto('eurusd',k.eurusd,4,'aus OKX-Kursen, Stand '+stand);
   if(k.mm_prozent)setAuto('mm',k.mm_prozent,2,'aus OKX-Quote von '+fmt(k.quote_prozent,2)+' % berechnet');
   if(k.btc_kurs)setAuto('price',k.btc_kurs,0,'aus letztem Abruf, Stand '+stand);
-
+  if(k.start&&k.start.usd>0){START=k.start;applyStart();}
+  
   var live=await liveKurs();
   if(live){
     var jetzt=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
