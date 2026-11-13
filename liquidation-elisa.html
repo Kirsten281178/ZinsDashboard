@@ -227,19 +227,27 @@ function applyStart(){
   $('h-startk').className='hint a';
 }
 $('startw').addEventListener('change',function(){savePerf();applyStart();run();});
+var NACH=null;
 function perf(P){
-  var sv=nv('startk'),w=$('startw').value,fx=nv('eurusd')||1;
+  var sv=nv('startk'),w=$('startw').value,fx=nv('eurusd')||1,sym=w==='EUR'?' €':' $';
+  $('perf').style.gridTemplateColumns='repeat(auto-fit,minmax(220px,1fr))';
   if(sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Startkapital wird beim nächsten Abruf automatisch ermittelt.</p>';return;}
+  var ein=NACH?(w==='EUR'?NACH.ein_eur:NACH.ein_usd):0;
+  var aus=NACH?(w==='EUR'?NACH.aus_eur:NACH.aus_usd):0;
+  var basis=sv+ein-aus;
   var wertUsd=nv('btc')*P+nv('cashu')+nv('casheur')*fx-nv('debt');
   var wert=w==='EUR'?wertUsd/fx:wertUsd;
-  var diff=wert-sv,pct=diff/sv*100,sym=w==='EUR'?' €':' $';
+  var diff=wert-basis,pct=basis>0?diff/basis*100:0;
   var c=diff>=0?'gain':'loss',vz=diff>=0?'+':'';
+  var einInfo=NACH?(NACH.anzahl+' Überträge'+(aus>0?', abzgl. '+fmt(aus,0)+sym+' Auszahlungen':'')):'noch nicht geladen';
   $('perf').innerHTML=
     '<div class="pc"><p class="l">Startkapital</p><p class="v">'+fmt(sv,0)+sym+'</p></div>'+
+    '<div class="pc"><p class="l">Einzahlungen seit Kreditbeginn</p><p class="v">'+fmt(ein,0)+sym+'</p><p class="l" style="font-size:12px">'+einInfo+'</p></div>'+
+    '<div class="pc"><p class="l">Eingesetzt gesamt</p><p class="v">'+fmt(basis,0)+sym+'</p></div>'+
     '<div class="pc"><p class="l">Wert heute</p><p class="v">'+fmt(wert,0)+sym+'</p></div>'+
     '<div class="pc"><p class="l">Veränderung</p><p class="v '+c+'">'+vz+fmt(diff,0)+sym+'</p></div>'+
     '<div class="pc"><p class="l">Veränderung in %</p><p class="v '+c+'">'+vz+fmt(pct,1)+' %</p></div>';
-}  
+}
 document.querySelectorAll('input').forEach(function(e){e.addEventListener('input',run)});
 
 var KEY='okxZinsDashboardCfg';
@@ -294,6 +302,7 @@ async function laden(){
   if(k.mm_prozent)setAuto('mm',k.mm_prozent,2,'aus OKX-Quote von '+fmt(k.quote_prozent,2)+' % berechnet');
   if(k.btc_kurs)setAuto('price',k.btc_kurs,0,'aus letztem Abruf, Stand '+stand);
   if(k.start&&k.start.usd>0){START=k.start;applyStart();}
+  if(k.nachschuesse){NACH=k.nachschuesse;}
   
   var live=await liveKurs();
   if(live){
