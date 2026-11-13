@@ -233,7 +233,7 @@ var NACH=null;
 function perf(P){
   var sv=nv('startk'),w=$('startw').value,fx=nv('eurusd')||1,sym=w==='EUR'?' €':' $';
   $('perf').style.gridTemplateColumns='repeat(auto-fit,minmax(220px,1fr))';
-  if(sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Startkapital wird beim nächsten Abruf automatisch ermittelt.</p>';return;}
+  if(!START&&sv<=0){$('perf').innerHTML='<p class="note" style="margin:0;grid-column:1/-1">Startkapital wird beim nächsten Abruf automatisch ermittelt.</p>';return;}
   var ein=NACH?(w==='EUR'?NACH.ein_eur:NACH.ein_usd):0;
   var aus=NACH?(w==='EUR'?NACH.aus_eur:NACH.aus_usd):0;
   var basis=sv+ein-aus;
@@ -303,7 +303,7 @@ async function laden(){
   setAuto('eurusd',k.eurusd,4,'aus OKX-Kursen, Stand '+stand);
   if(k.mm_prozent)setAuto('mm',k.mm_prozent,2,'aus OKX-Quote von '+fmt(k.quote_prozent,2)+' % berechnet');
   if(k.btc_kurs)setAuto('price',k.btc_kurs,0,'aus letztem Abruf, Stand '+stand);
-  if(k.start&&k.start.usd>0){START=k.start;applyStart();}
+ if(k.start){START=k.start;applyStart();}
   if(k.nachschuesse){NACH=k.nachschuesse;}
   
   var live=await liveKurs();
