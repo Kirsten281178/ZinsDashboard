@@ -33,6 +33,7 @@ summary{cursor:pointer;color:var(--muted);font-size:14px}
 <div class="m"><p class="ml">Ø letzte 7 Tage p. a.</p><p class="mv" id="s2">–</p></div>
 <div class="m"><p class="ml">Kosten/Jahr (Ø 7 Tage)</p><p class="mv" id="s3">–</p></div>
 <div class="m"><p class="ml">Gezahlte Zinsen gesamt</p><p class="mv" id="s4">–</p></div>
+<div class="m"><p class="ml">Ø seit Kreditaufnahme p. a.</p><p class="mv" id="s5">–</p></div>
 </div>
 
 <div style="position:relative;height:240px;margin-bottom:1.5rem"><canvas id="c"></canvas></div>
@@ -86,6 +87,9 @@ function render(rows){
   $('s2').textContent=f(avg7)+' %';
   $('s3').textContent=f(last.liab*avg7/100,0)+' USDC';
   $('s4').textContent=f(total)+' USDC';
+  const liabStunden=rows.reduce((s,r)=>s+r.liab,0);
+  const avgAll=liabStunden>0?total/liabStunden*8760*100:rows.reduce((s,r)=>s+r.pa,0)/rows.length;
+  $('s5').textContent=f(avgAll)+' %';
 
   const tage={};
   rows.forEach(r=>{
